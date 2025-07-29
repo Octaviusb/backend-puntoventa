@@ -26,12 +26,14 @@ app.get('/', (req, res) => {
   res.send('API punto de venta funcionando correctamente.');
 });
 
+// Rutas de usuarios
+app.use('/api/users', userRoutes);
+
 // Inicio del servidor
 app.listen(PORT, () => {
   const environment = process.env.NODE_ENV || 'desarrollo';
   console.log(`✅ Servidor backend activo en modo "${environment}" en el puerto ${PORT}`);
 });
 
-// Rutas de usuarios
-app.use('/api/users', userRoutes);
+
 
