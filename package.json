@@ -1,0 +1,31 @@
+{
+  "name": "punto-de-venta-backend",
+  "version": "1.0.0",
+  "description": "Backend for the Point of Sale system designed for small and medium businesses.",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "init-db": "node src/scripts/initDB.js",
+    "create-admin": "node src/scripts/createAdmin.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.1",
+    "express-validator": "^6.15.0",
+    "helmet": "^7.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^6.18.0",
+    "mongoose": "^5.10.9"
+  },
+  "devDependencies": {
+    "mocha": "^11.7.1",
+    "nodemon": "^2.0.4"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}
