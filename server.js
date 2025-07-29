@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const pool = require('./config/database');
 require('dotenv').config();
+const userRoutes = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,3 +31,7 @@ app.listen(PORT, () => {
   const environment = process.env.NODE_ENV || 'desarrollo';
   console.log(`✅ Servidor backend activo en modo "${environment}" en el puerto ${PORT}`);
 });
+
+// Rutas de usuarios
+app.use('/api/users', userRoutes);
+
