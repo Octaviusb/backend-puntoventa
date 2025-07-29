@@ -20,7 +20,8 @@
     "helmet": "^7.2.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^6.18.0",
-    "mongoose": "^5.10.9"
+    "mongoose": "^5.10.9",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "mocha": "^11.7.1",
