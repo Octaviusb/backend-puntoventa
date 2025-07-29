@@ -6,10 +6,11 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Test DB connection
+// Ruta para probar conexión con la base de datos
 app.get('/api/test-db', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT NOW()');
@@ -19,11 +20,13 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
-// Placeholder route
+// Ruta principal
 app.get('/', (req, res) => {
-  res.send('API punto de venta funcionando.');
+  res.send('API punto de venta funcionando correctamente.');
 });
 
+// Inicio del servidor
 app.listen(PORT, () => {
-  console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+  const environment = process.env.NODE_ENV || 'desarrollo';
+  console.log(`✅ Servidor backend activo en modo "${environment}" en el puerto ${PORT}`);
 });
