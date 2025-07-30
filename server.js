@@ -4,6 +4,7 @@ const pool = require('./config/database');
 require('dotenv').config();
 const userRoutes = require('./routes/users');
 const dashboardRoutes = require('./routes/dashboard');
+const inventoryRoutes = require('./routes/inventory');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
 // Rutas de usuarios
 app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 // Inicio del servidor
 app.listen(PORT, () => {
