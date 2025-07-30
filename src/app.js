@@ -31,13 +31,35 @@ if (!process.env.JWT_SECRET) {
     console.warn('ADVERTENCIA: JWT_SECRET no está definido en el archivo .env. Se ha generado una clave aleatoria temporal.');
 }
 
-// Conexión a MongoDB
+// Conexión a MongoDB con manejo de errores mejorado
+let mongoConnected = false;
+
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
-.then(() => console.log('Conectado a MongoDB'))
-.catch(err => console.error('Error al conectar a MongoDB:', err));
+.then(() => {
+    console.log('Conectado a MongoDB');
+    mongoConnected = true;
+})
+.catch(err => {
+    console.error('Error al conectar a MongoDB:', err);
+    console.log('Continuando sin conexión a MongoDB. Algunas funciones pueden no estar disponibles.');
+    mongoConnected = false;
+});
+
+// Middleware para verificar conexión a MongoDB
+const checkMongoDB = (req, res, next) => {
+    if (!mongoConnected && (req.path.includes('/users') || req.path.includes('/dashboard'))) {
+        return res.status(500).json({ 
+            message: 'Servicio temporalmente no disponible: Error de conexión a la base de datos' 
+        });
+    }
+    next();
+};
+
+// Aplicar middleware de verificación de MongoDB
+app.use(checkMongoDB);
 
 // Middleware - IMPORTANTE: CORS debe ir antes de definir rutas
 

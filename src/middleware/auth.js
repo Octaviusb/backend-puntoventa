@@ -17,6 +17,7 @@ module.exports = async (req, res, next) => {
     if (isPublicRoute) {
         return next();
     }
+    
     try {
         // Obtener el token del header
         const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -27,6 +28,12 @@ module.exports = async (req, res, next) => {
 
         // Verificar el token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Si no hay conexión a MongoDB, permitir acceso con token válido
+        if (typeof User === 'undefined' || User === null) {
+            req.user = { id: decoded.id }; // Usuario simulado
+            return next();
+        }
         
         // Buscar el usuario
         const user = await User.findById(decoded.id).select('-password');
