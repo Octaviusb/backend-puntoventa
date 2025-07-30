@@ -44,7 +44,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Configuración CORS más segura y optimizada
 const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
-        ? ['https://tudominio.com'] // En producción, limitar a dominios específicos
+        ? ['https://tudominio.com', 'https://puntode-venta-six.vercel.app'] // En producción, limitar a dominios específicos
         : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:3000'], // En desarrollo
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
@@ -59,6 +59,12 @@ app.use(cors(corsOptions));
 // Middleware para manejar OPTIONS preflight
 app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' 
+            ? 'https://puntode-venta-six.vercel.app' 
+            : 'http://localhost:3000');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+        res.header('Access-Control-Allow-Credentials', 'true');
         return res.status(200).end();
     }
     next();
