@@ -11,14 +11,14 @@ require('dotenv').config();
 // Import routes
 const salesRoutes = require('./routes/sales');
 const inventoryRoutes = require('./routes/inventory');
-const userRoutes = require('./routes/users');
-const cashRegisterRoutes = require('./routes/cashRegister');
-const purchasesRoutes = require('./routes/purchases');
-const categoriesRoutes = require('./routes/categories');
-const clientsRoutes = require('./routes/clients');
-const suppliersRoutes = require('./routes/suppliers');
-const companyRoutes = require('./routes/company');
-const dashboardRoutes = require('./routes/dashboard');
+const userRoutes = require('./src/routes/users');
+const cashRegisterRoutes = require('./src/routes/cashRegister');
+const purchasesRoutes = require('./src/routes/purchases');
+const categoriesRoutes = require('./src/routes/categories');
+const clientsRoutes = require('./src/routes/clients');
+const suppliersRoutes = require('./src/routes/suppliers');
+const companyRoutes = require('./src/routes/company');
+const dashboardRoutes = require('./src/routes/dashboard');
 
 const app = express();
 const PORT = process.env.PORT || 7000;
@@ -34,23 +34,31 @@ if (!process.env.JWT_SECRET) {
 // Conexión a MongoDB con manejo de errores mejorado
 let mongoConnected = false;
 
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-.then(() => {
-    console.log('Conectado a MongoDB');
-    mongoConnected = true;
-})
-.catch(err => {
-    console.error('Error al conectar a MongoDB:', err);
-    console.log('Continuando sin conexión a MongoDB. Algunas funciones pueden no estar disponibles.');
+// Only try to connect to MongoDB if MONGODB_URI is defined
+if (process.env.MONGODB_URI) {
+    mongoose.connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    })
+    .then(() => {
+        console.log('Conectado a MongoDB');
+        mongoConnected = true;
+    })
+    .catch(err => {
+        console.error('Error al conectar a MongoDB:', err);
+        console.log('Continuando sin conexión a MongoDB. Algunas funciones pueden no estar disponibles.');
+        mongoConnected = false;
+    });
+} else {
+    console.log('MONGODB_URI no está definido. Continuando sin conexión a MongoDB.');
     mongoConnected = false;
-});
+}
 
 // Middleware para verificar conexión a MongoDB
 const checkMongoDB = (req, res, next) => {
-    if (!mongoConnected && (req.path.includes('/users') || req.path.includes('/dashboard'))) {
+    // Allow dashboard routes to proceed even without MongoDB connection
+    // The dashboard controller already handles MongoDB unavailability
+    if (!mongoConnected && req.path.includes('/users')) {
         return res.status(500).json({ 
             message: 'Servicio temporalmente no disponible: Error de conexión a la base de datos' 
         });
@@ -66,7 +74,7 @@ app.use(checkMongoDB);
 // Configuración CORS más segura y optimizada
 const corsOptions = {
     origin: process.env.NODE_ENV === 'production' 
-        ? ['https://tudominio.com', 'https://puntode-venta-six.vercel.app'] // En producción, limitar a dominios específicos
+        ? ['https://puntode-venta-six.vercel.app'] // En producción, limitar a dominios específicos
         : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:3000'], // En desarrollo
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
@@ -124,6 +132,14 @@ app.get('/', (req, res) => {
 // Endpoint de prueba
 app.get('/api/test', (req, res) => {
     res.json({ message: 'Conexión exitosa con el backend', timestamp: new Date() });
+});
+
+// Test route to check MongoDB connection status
+app.get('/api/test-db-status', (req, res) => {
+    res.json({ 
+        mongoConnected: mongoConnected,
+        message: mongoConnected ? 'Conectado a MongoDB' : 'No conectado a MongoDB'
+    });
 });
 
 // Middleware de autenticación global

@@ -1,4 +1,12 @@
-const User = require('../models/users');
+// Try to import User model, but handle case where MongoDB is not connected
+let User;
+try {
+    User = require('../models/users');
+} catch (error) {
+    console.log('No se pudo cargar el modelo de usuarios:', error.message);
+    User = null;
+}
+
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
@@ -17,7 +25,7 @@ exports.registerUser = async (req, res) => {
     }
 
     // Si no hay conexión a MongoDB, devolver un mensaje de error
-    if (typeof User === 'undefined' || User === null) {
+    if (User === null) {
         return res.status(500).json({ message: 'Servicio no disponible: Error de conexión a la base de datos' });
     }
 
@@ -61,7 +69,7 @@ exports.loginUser = async (req, res) => {
     }
 
     // Si no hay conexión a MongoDB, permitir login con credenciales por defecto
-    if (typeof User === 'undefined' || User === null) {
+    if (User === null) {
         const { email, password } = req.body;
         // Credenciales por defecto para demo
         if (email === 'admin@admin.com' && password === 'admin123') {
@@ -112,7 +120,7 @@ exports.loginUser = async (req, res) => {
 // Obtener todos los usuarios
 exports.getAllUsers = async (req, res) => {
     // Si no hay conexión a MongoDB, devolver usuarios simulados
-    if (typeof User === 'undefined' || User === null) {
+    if (User === null) {
         return res.json([{
             _id: 'demo-user-id',
             nombre: 'Usuario Demo',
@@ -134,7 +142,7 @@ exports.getAllUsers = async (req, res) => {
 // Obtener usuario por ID
 exports.getUserById = async (req, res) => {
     // Si no hay conexión a MongoDB, devolver usuario simulado
-    if (typeof User === 'undefined' || User === null) {
+    if (User === null) {
         return res.json({
             _id: 'demo-user-id',
             nombre: 'Usuario Demo',
@@ -164,7 +172,7 @@ exports.updateUser = async (req, res) => {
     }
 
     // Si no hay conexión a MongoDB, devolver un mensaje de error
-    if (typeof User === 'undefined' || User === null) {
+    if (User === null) {
         return res.status(500).json({ message: 'Servicio no disponible: Error de conexión a la base de datos' });
     }
 
@@ -214,7 +222,7 @@ exports.updateUser = async (req, res) => {
 // Eliminar usuario
 exports.deleteUser = async (req, res) => {
     // Si no hay conexión a MongoDB, devolver un mensaje de error
-    if (typeof User === 'undefined' || User === null) {
+    if (User === null) {
         return res.status(500).json({ message: 'Servicio no disponible: Error de conexión a la base de datos' });
     }
 
