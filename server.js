@@ -3,6 +3,8 @@ const cors = require('cors');
 const pool = require('./config/database');
 require('dotenv').config();
 const userRoutes = require('./routes/users');
+const dashboardRoutes = require('./routes/dashboard');
+
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,6 +12,7 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use('/api/dashboard', dashboardRoutes);
 
 // Ruta para probar conexión con la base de datos
 app.get('/api/test-db', async (req, res) => {
